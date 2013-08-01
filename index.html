@@ -28,6 +28,9 @@
 		<!--[if lt IE 9]>
 		<script src="lib/js/html5shiv.js"></script>
 		<![endif]-->
+
+        <link rel="stylesheet" href="http://www.jointjs.com/css/joint.css" />
+        <script src="http://www.jointjs.com/js/joint.js"></script>
 	</head>
 
 	<body>
@@ -49,30 +52,40 @@
                 </section>
 
                 <section>
+                    <h2>The Game Terminology</h2>
+                </section>
+
+                <section>
+                    <h2>The Field</h2>
+
+                    <img width="750" height="502" src="./field.png" alt="The Field">
+                </section>
+
+                <section>
+                    <h2>Controllers</h2>
+
+                    <img width="272" height="442" src="./controller.png" alt="Controllers">
+                </section>
+
+                <section>
+                    <h2>The Agent</h2>
+
+                    <img width="766" height="293" src="./agent.png" alt="Agent">
+                </section>
+
+                <section>
                     <h2>Node.js</h2>
 
                     <ul>
                         <li>Server side JS</li>
                         <li>Chrome's V8</li>
-                        <li>nodemon, lesscss, coffee-script</li>
+                        <li>Single process</li>
+                        <li>Nonblocking IO</li>
+                        <li>High concurrency (&gt; C10K)</li>
+                        <li>Code reusable on server and client</li>
+                        <li>Module Namespacing</li>
+                        <li>Rich Ecosystem - NPM</li>
                     </ul>
-                </section>
-
-                <section>
-                    <h2>Hello World</h2>
-
-					<pre><code data-trim contenteditable>
-var http = require('http');
-
-http.createServer(function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end('Hello World\n');
-}).listen(80, '127.0.0.1');
-					</code></pre>
-
-					<pre><code data-trim contenteditable>
-$ node hello.js
-					</code></pre>
                 </section>
 
                 <section>
@@ -95,19 +108,24 @@ setTimeout(function () {
                 </section>
 
                 <section>
-                    <h2>Advantages</h2>
+                    <h2>Hello World</h2>
 
-                    <ul>
-                        <li>High concurrency (&gt; C10K)</li>
-                        <li>Single process</li>
-                        <li>Code reusable on server and client</li>
-                        <li>Module Namespacing</li>
-                        <li>NPM</li>
-                    </ul>
+					<pre><code data-trim contenteditable>
+var http = require('http');
+
+http.createServer(function (req, res) {
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end('Hello World\n');
+}).listen(80, '127.0.0.1');
+					</code></pre>
+
+					<pre><code data-trim contenteditable>
+$ node hello.js
+					</code></pre>
                 </section>
 
                 <section>
-                    <h2>NPM</h2>
+                    <h2>Node Ecosystem - NPM</h2>
 
                     <ul>
                         <li>Integral part of Node</li>
@@ -155,7 +173,7 @@ $ npm publish
                 </section>
                 
                 <section>
-                    <h2>Leading technology</h2>
+                    <h2>Taking Over the World</h2>
 
                     <p>
 						<img width="724" height="484" src="./github_top_languages.png" alt="Top Languages">
@@ -248,7 +266,7 @@ app.listen(3000);
                 </section>
 
                 <section>
-                    <h2>Socket.io Example</h2>
+                    <h2>Socket.io Hello World</h2>
 
                     <h3>Server Side</h3>
 					<pre><code data-trim contenteditable>
@@ -262,119 +280,78 @@ io.sockets.on('connection', function (socket) {
 });
 					</code></pre>
 
+                    <h3>Client Side</h3>
 					<pre><code data-trim contenteditable>
-<script src="/socket.io/socket.io.js"></script>
-<script>
+&lt;script src=&quot;/socket.io/socket.io.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
   var socket = io.connect('http://localhost');
   socket.on('news', function (data) {
     console.log(data);
     socket.emit('my other event', { my: 'data' });
   });
-</script>
+&lt;/script&gt;
 					</code></pre>
                 </section>
 
                 <section>
                     <h2>Multiplayer Pong</h2>
-                    <ul>
-                        <li>Field</li>
-                        <ul>
-                            <li>Existing canvas pong</li>
-                            <li>Socket.io + jQuery UI + QR Code</li>
-                        </ul>
-                        <li>Remote control - jQuery ui + Socket.io</li>
-                        <li>Agent</li>
-                        <li>Express.js</li>
-                    </ul>
+                    <img width="766" height="293" src="./agent.png" alt="Agent">
+                </section>
+
+                <section>
+                    <h2>Determining Paddles Movement</h2>
                 </section>
 
 				<section>
-					<h2>Controller - listeners</h2>
+					<h2>Controller</h2>
 					<pre><code data-trim contenteditable>
-socket.on("disconnect", function (error) {
-    $("#connection_status").html("Disconnected");
-    clear_position_interval();
-});
+$("#up,#down")
+    .bind("touchstart", function (e) {
+        socket.emit("direction", field_id, controller_id, \
+            controller_side, this.id === "up" ? 1 : -1);
+    })
+    .bind("touchend", function (e) {
+        socket.emit("direction", field_id, controller_id, \
+            controller_side, 0);
+    });
+					</code></pre>
+				</section>
 
-socket.on("error", function (error) {
-    handle_error(error.error);
-});
+				<section>
+					<h2>Agent</h2>
+					<pre><code data-trim contenteditable>
+socket.on('direction', function (field_id, controller_id, \
+                                    side, controller_direction) {
+  // get field_socket
+  var field_socket = getFieldSocket(socket, field_id);
+  if (field_socket === false) {
+    return;
+  }
 
-socket.on("controller_registered", function () {
-    $("#connection_status").html("Connected");
+  // update controller_side
+  if (typeof controllers[field_id][controller_id] === 'undefined') {
+    return;
+  }
+  controllers[field_id][controller_id].direction = \
+      controller_direction;
 
-    message("Waiting for game to begin");
-});
+  var direction = /* ... Average of controllers direction for side */;
+  if (direction > 0) {
+    direction = 1;
+  }
 
-socket.on("start", function (side) {
-    controller_side = side;
+  if (direction < 0) {
+    direction = -1;
+  }
 
-    if (side === 0) {
-        message("<=== Left Team Play!");
-    }
-
-    if (side === 1) {
-        message("Right Team Play! ===>");
-    }
+  field_socket.emit("direction", side, direction);
 });
 					</code></pre>
 				</section>
 
 				<section>
-					<h2>Controller - emitters</h2>
+					<h2>Field</h2>
 					<pre><code data-trim contenteditable>
-position_interval = setInterval(function () {
-    var joystick_position = $joystick.position().top + (joystick_height / 2);
-
-    var direction;
-    if (joystick_position < up_bound_height) {
-        direction = 1;
-    } else if (joystick_position < down_bound_height) {
-        direction = 0;
-    } else {
-        direction = -1;
-    }
-
-    if (direction !== current_direction) {
-        current_direction = direction;
-        socket.emit("direction", field_id, controller_id, controller_side, current_direction);
-    }
-}, 20);
-					</code></pre>
-				</section>
-
-				<section>
-					<h2>Field - emitters</h2>
-					<pre><code data-trim contenteditable>
-socket.emit("new_field");
-					</code></pre>
-				</section>
-
-				<section>
-					<h2>Field - listeners</h2>
-					<pre><code data-trim contenteditable>
-socket.on("field_registered", function (field_id) {
-    var controller_url = "http://" + CONFIG.domain + "/remote_control/?field_id=" + field_id;
-    var $qrcode = $("#qr-code");
-    var qr_size = 188;
-    $qrcode.html("").css({"padding": "10px", "width": qr_size + "px", "background-color": "white", "margin": "15px auto"});
-    new QRCode($qrcode.get(0), {text: controller_url, width: qr_size, height: qr_size});
-    $("#controller_url").html(controller_url);
-});
-					</code></pre>
-				</section>
-
-				<section>
-					<h2>Field - listeners</h2>
-					<pre><code data-trim contenteditable>
-socket.on("controller_connected", function () {
-    $("#connected_players").html(parseInt($("#connected_players").html(), 10) + 1);
-});
-
-socket.on("controller_disconnected", function () {
-    $("#connected_players").html(parseInt($("#connected_players").html(), 10) - 1);
-});
-
 socket.on("direction", function (side, direction) {
     paddle = side === 0 ? pong.leftPaddle : pong.rightPaddle;
 
@@ -388,23 +365,6 @@ socket.on("direction", function (side, direction) {
       paddle.stopMovingUp();
       paddle.moveDown();
     }
-});
-					</code></pre>
-				</section>
-
-				<section>
-					<h2>Agent - listeners</h2>
-					<pre><code data-trim contenteditable>
-socket.on('direction', function (field_id, controller_id, side, direction) {
-    var field_socket = fields[field_id];
-    // CODE: verify field_id validity
-
-    controllers[field_id][controller_id].direction = direction;
-
-    // CODE: calcualte avrage direction of controllers in the same field and
-    // side
-
-    field_socket.emit("direction", side, direction);
 });
 					</code></pre>
 				</section>
