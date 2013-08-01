@@ -6,4 +6,4 @@ Install dependencies:
 
 Run the lecture with:
 
-    $ grunt server
+    $ grunt serve
