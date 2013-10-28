@@ -48,11 +48,7 @@
 				</section>
 
                 <section>
-                    <h2>Let's Build a Web App</h2>
-                </section>
-
-                <section>
-                    <h2>The Game Terminology</h2>
+                    <h2>The Game and its Terminology</h2>
                 </section>
 
                 <section>
@@ -74,18 +70,39 @@
                 </section>
 
                 <section>
-                    <h2>Node.js</h2>
+                    <h2>Layer 1: Node.js</h2>
 
                     <ul>
                         <li>Server side JS</li>
-                        <li>Chrome's V8</li>
-                        <li>Single process</li>
-                        <li>Nonblocking IO</li>
-                        <li>High concurrency (&gt; C10K)</li>
-                        <li>Code reusable on server and client</li>
-                        <li>Module Namespacing</li>
-                        <li>Rich Ecosystem - NPM</li>
+                        <li>Chrome's Javascript parser: The V8</li>
                     </ul>
+                </section>
+
+                <section>
+                    <h2>Input/Output Operations: Traditional Approach</h2>
+
+                    <ul>
+                        <li>Default approach of most of the languages used for web development</li>
+                    </ul>
+
+                    <img width="445" height="213" src="./threaded_server.png" alt="Threaded Server">
+                </section>
+
+                <section>
+                    <h2>Nonblocking IO: Dealing with the C10k problem</h2>
+
+                    <ul>
+                        <li>Node embraces the Non blocking IO (asynchronous IO) paradigm</li>
+                        <li>No threads - one single process</li>
+                    </ul>
+
+                    <img width="450" height="287" src="./nonblocking.png" alt="Blocking IO vs Non-Blocking">
+                </section>
+
+                <section>
+                    <h2>All In One</h2>
+
+                    <p>Node.js serves as both the parser and the server - our web-app need no http server</p>
                 </section>
 
                 <section>
@@ -133,45 +150,12 @@ $ node hello.js
                         <li>Dependencies manager</li>
                         <li>Encourage code sharing</li>
                     </ul>
-                </section>
-
-                <section>
-                    <h2>package.json</h2>
-
-					<pre><code data-trim contenteditable>
-{
-  "name": "multiplayer-pong",
-  "main": "./lib/server",
-  "version": "0.1.0",
-  "description": "Play pong",
-  "homepage": "https://github.com/theosp/multiplayer-pong",
-  "author": {
-    "name": "Daniel Chcouri",
-    "email": "333222@gmail.com"
-  },
-  "engines": {
-    "node": ">=0.10.0"
-  },
-  "dependencies" : {
-    "socket.io": "0.9.x",
-    "express": "3.3.x",
-    "underscore": "1.5.x",
-    "nconf": "0.6.x",
-    "marked": "0.2.x"
-  },
-  "readmeFilename": "README.md"
-}
-					</code></pre>
-                </section>
-
-                <section>
-                    <h2>Encourage code sharing</h2>
 
 					<pre><code data-trim contenteditable>
 $ npm publish
 					</code></pre>
                 </section>
-                
+
                 <section>
                     <h2>Taking Over the World</h2>
 
@@ -186,7 +170,7 @@ $ npm publish
                     <h2>Community in Exponential Growth</h2>
 
                     <p>
-						<img width="609" height="415" src="./module_counts.png" alt="Top Languages">
+						<img width="591" height="414" src="./module_counts.png" alt="Top Languages">
                     </p>
 
 					<p><a href="http://modulecounts.com/">http://modulecounts.com/</a></p>
@@ -208,23 +192,6 @@ app.listen(3000);
                 </section>
 
                 <section>
-                    <h2>Routing</h2>
-
-					<pre><code data-trim contenteditable>
-var express = require('express');
-var app = express();
-
-app.get('/', function(req, res){
-});
-
-app.post('/register_user/', function(req, res){
-});
-
-app.listen(3000);
-					</code></pre>
-                </section>
-
-                <section>
                     <h2>Middlewares</h2>
 
 					<pre><code data-trim contenteditable>
@@ -235,22 +202,6 @@ app.use("/shared_dir", express.directory("/directory"));
 
 app.listen(3000);
 					</code></pre>
-                </section>
-
-                <section>
-                    <h2>API Driven - REST</h2>
-                    <ul>
-                        <li>No server side templating</li>
-                        <li>JSON</li>
-                        <li>Low CPU</li>
-                        <li>Low traffic</li>
-                        <li>Improved user experience</li>
-                        <li>Easy to maintain</li>
-                        <li>Easy to test</li>
-                        <li>Easy to document</li>
-                        <li>Easy to share with 3rd parties</li>
-                        <li>Simpler code</li>
-                    </ul>
                 </section>
 
                 <section>
@@ -266,7 +217,7 @@ app.listen(3000);
                 </section>
 
                 <section>
-                    <h2>Socket.io Hello World</h2>
+                    <h2>Socket.io Example</h2>
 
                     <h3>Server Side</h3>
 					<pre><code data-trim contenteditable>
@@ -294,12 +245,8 @@ io.sockets.on('connection', function (socket) {
                 </section>
 
                 <section>
-                    <h2>Multiplayer Pong</h2>
-                    <img width="766" height="293" src="./agent.png" alt="Agent">
-                </section>
-
-                <section>
                     <h2>Determining Paddles Movement</h2>
+                    <img width="766" height="293" src="./agent.png" alt="Agent">
                 </section>
 
 				<section>
@@ -328,14 +275,14 @@ socket.on('direction', function (field_id, controller_id, \
     return;
   }
 
-  // update controller_side
+  // update controller direction
   if (typeof controllers[field_id][controller_id] === 'undefined') {
     return;
   }
   controllers[field_id][controller_id].direction = \
       controller_direction;
 
-  var direction = /* ... Average of controllers direction for side */;
+  var direction = /* ... Sum controllers direction for the given side */;
   if (direction > 0) {
     direction = 1;
   }
@@ -356,13 +303,10 @@ socket.on("direction", function (side, direction) {
     paddle = side === 0 ? pong.leftPaddle : pong.rightPaddle;
 
     if (direction === 1) {
-      paddle.stopMovingDown();
       paddle.moveUp();
     } else if (direction === 0) {
-      paddle.stopMovingUp();
-      paddle.stopMovingDown();
+      paddle.stopMoving();
     } else {
-      paddle.stopMovingUp();
       paddle.moveDown();
     }
 });
